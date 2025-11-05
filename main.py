@@ -271,15 +271,18 @@ async def get_restaurants(cuisine: Optional[str] = None, is_active: bool = True)
         rows = cursor.fetchall()
         return [Restaurant(**dict(row)) for row in rows]
 
-@app.get("/restaurants/{restaurant_id}")
-async def get_restaurant(restaurant_id: str):
+@app.get("/restaurants/{restaurant_id}", response_model=Restaurant)
+async def get_restaurant_by_id(restaurant_id: str):
     with get_db_connection() as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM restaurants WHERE id = ?', (restaurant_id,))
         row = cursor.fetchone()
+        
         if not row:
             raise HTTPException(status_code=404, detail="Restaurant not found")
-        return Restaurant(**dict(row))
+        
+        # Если у вас уже есть способ преобразования row в словарь
+        return Restaurant(**dict(row))  # Эта строка должна работать, если dict(row) не вызывает ошибку
 
 # Menu Items (позиции в меню)
 @app.get("/restaurants/{restaurant_id}/menu")
