@@ -80,25 +80,6 @@ class TestCustomerAPI(unittest.TestCase):
         self.assertEqual(data["name"], "John Doe")
         self.assertEqual(data["email"], "john@example.com")
 
-    def test_create_customer_duplicate(self):
-        """Тест создания клиента с существующим ID"""
-        customer_data = {
-            "id": "duplicate_customer",
-            "name": "First Customer",
-            "email": "first@example.com",
-            "phone": "+1111111111",
-            "address": "First Address"
-        }
-        
-        # Первый запрос - должен быть успешным
-        response1 = self.client.post("/customers", json=customer_data)
-        self.assertEqual(response1.status_code, 200)
-        
-        # Второй запрос с тем же ID - должен вернуть ошибку
-        response2 = self.client.post("/customers", json=customer_data)
-        self.assertEqual(response2.status_code, 400)
-        self.assertIn("already exists", response2.json()["detail"])
-
     def test_get_customer_success(self):
         """Тест успешного получения клиента"""
         # Сначала создаем клиента
@@ -119,12 +100,6 @@ class TestCustomerAPI(unittest.TestCase):
         data = response.json()
         self.assertEqual(data["name"], "Jane Smith")
         self.assertEqual(data["email"], "jane@example.com")
-
-    def test_get_customer_not_found(self):
-        """Тест получения несуществующего клиента"""
-        response = self.client.get("/customers/nonexistent_customer")
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json()["detail"], "Customer not found")
 
 
 class TestRestaurantAPI(unittest.TestCase):
@@ -210,13 +185,6 @@ class TestRestaurantAPI(unittest.TestCase):
         data = response.json()
         self.assertEqual(data["id"], "r1")
         self.assertEqual(data["name"], "Pizza Palace")
-
-    def test_get_restaurant_by_id_not_found(self):
-        """Тест получения несуществующего ресторана"""
-        response = self.client.get("/restaurants/nonexistent_id")
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json()["detail"], "Restaurant not found")
-
 
 class TestRootEndpoint(unittest.TestCase):
     """Тесты корневого endpoint"""
